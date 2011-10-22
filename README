@@ -41,8 +41,16 @@ ENVIRONMENT VARIABLES
     VISUAL
         Also supported to determine what editor to use.
 
+    VIDIR_EDITOR_ARGS
+        Optional args for editor
+
 AUTHOR
-    Copyright 2006 by Joey Hess <joey@kitenet.net>
+    Joey Hess <joey@kitenet.net> 2006-2010
+
+    Modifications by Magnus Woldrich <m@japh.se> 2011
+
+COPYRIGHT
+    Copyright 2006-2011 the vidir "AUTHOR"s as listed above.
 
     Licensed under the GNU GPL.
 
