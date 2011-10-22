@@ -1,0 +1,6 @@
+Execute:
+  touch °»ºÞ»¢¥ı↑↑¥ı¥↑¥↑Œ
+  vidir
+Result:
+  Use of uninitialized value in system at bin/vidir line 70.
+  vim exited nonzero, aborting: No such file or directory
