@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+use strict;
 
 use File::Spec;
 use File::Temp;
@@ -63,7 +64,7 @@ elsif (exists $ENV{EDITOR}) {
 elsif (exists $ENV{VISUAL}) {
   @editor=split(' ', $ENV{VISUAL});
 }
-$ret=system(@editor, $ENV{VIDIR_EDITOR_ARGS}, $tmp);
+my $ret=system(@editor, $ENV{VIDIR_EDITOR_ARGS}, $tmp);
 if ($ret != 0) {
   die "@editor exited nonzero, aborting\n";
 }
