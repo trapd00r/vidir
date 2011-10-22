@@ -1,81 +1,5 @@
 #!/usr/bin/perl
 
-=head1 NAME
-
-vidir - edit directory
-
-=head1 SYNOPSIS
-
-B<vidir> [--verbose] [directory|file|-] ...
-
-=head1 DESCRIPTION
-
-vidir allows editing of the contents of a directory in a text editor. If no
-directory is specified, the current directory is edited. 
-
-When editing a directory, each item in the directory will appear on its own
-numbered line. These numbers are how vidir keeps track of what items are
-changed. Delete lines to remove files from the directory, or
-edit filenames to rename files. You can also switch pairs of numbers to
-swap filenames.
-
-Note that if "-" is specified as the directory to edit, it reads a list of
-filenames from stdin and displays those for editing. Alternatively, a list
-of files can be specified on the command line.
-
-=head1 OPTIONS
-
-=over 4
-
-=item -v, --verbose
-
-Verbosely display the actions taken by the program.
-
-=back
-
-=head1 EXAMPLES
-
-=over 4
-
-=item vidir
-
-=item vidir *.jpeg
-
-Typical uses.
-
-=item find | vidir -
-
-Edit subdirectory contents too. To delete subdirectories,
-delete all their contents and the subdirectory itself in the editor.
-
-=item find -type f | vidir -
-
-Edit all files under the current directory and subdirectories.
-
-=back
-
-=head1 ENVIRONMENT VARIABLES
-
-=over 4
-
-=item EDITOR
-
-Editor to use.
-
-=item VISUAL
-
-Also supported to determine what editor to use.
-
-=back
-
-=head1 AUTHOR
-
-Copyright 2006 by Joey Hess <joey@kitenet.net>
-
-Licensed under the GNU GPL.
-
-=cut
-
 use File::Spec;
 use File::Temp;
 use Getopt::Long;
@@ -125,17 +49,21 @@ foreach (@dir) {
 @dir=();
 close OUT || die "$0: cannot write ".$tmp->filename.": $!\n";
 
-my @editor="vi";
-if (-x "/usr/bin/editor") {
+my @editor = "vi";
+
+if (exists $ENV{VIDIR_EDITOR}) {
+  @editor = split(' ', $ENV{VIDIR_EDITOR});
+}
+elsif (-x "/usr/bin/editor") {
   @editor="/usr/bin/editor";
 }
-if (exists $ENV{EDITOR}) {
+elsif (exists $ENV{EDITOR}) {
   @editor=split(' ', $ENV{EDITOR});
 }
-if (exists $ENV{VISUAL}) {
+elsif (exists $ENV{VISUAL}) {
   @editor=split(' ', $ENV{VISUAL});
 }
-$ret=system(@editor, $tmp);
+$ret=system(@editor, $ENV{VIDIR_EDITOR_ARGS}, $tmp);
 if ($ret != 0) {
   die "@editor exited nonzero, aborting\n";
 }
@@ -230,3 +158,91 @@ foreach my $item (reverse sort values %item) {
 }
 
 exit $error;
+
+__END__
+
+=head1 NAME
+
+vidir - edit directory
+
+=head1 SYNOPSIS
+
+B<vidir> [--verbose] [directory|file|-] ...
+
+=head1 DESCRIPTION
+
+vidir allows editing of the contents of a directory in a text editor. If no
+directory is specified, the current directory is edited. 
+
+When editing a directory, each item in the directory will appear on its own
+numbered line. These numbers are how vidir keeps track of what items are
+changed. Delete lines to remove files from the directory, or
+edit filenames to rename files. You can also switch pairs of numbers to
+swap filenames.
+
+Note that if "-" is specified as the directory to edit, it reads a list of
+filenames from stdin and displays those for editing. Alternatively, a list
+of files can be specified on the command line.
+
+=head1 OPTIONS
+
+=over 4
+
+=item -v, --verbose
+
+Verbosely display the actions taken by the program.
+
+=back
+
+=head1 EXAMPLES
+
+=over 4
+
+=item vidir
+
+=item vidir *.jpeg
+
+Typical uses.
+
+=item find | vidir -
+
+Edit subdirectory contents too. To delete subdirectories,
+delete all their contents and the subdirectory itself in the editor.
+
+=item find -type f | vidir -
+
+Edit all files under the current directory and subdirectories.
+
+=back
+
+=head1 ENVIRONMENT VARIABLES
+
+=over 4
+
+=item EDITOR
+
+Editor to use.
+
+=item VISUAL
+
+Also supported to determine what editor to use.
+
+=item VIDIR_EDITOR_ARGS
+
+Optional args for editor
+
+=back
+
+=head1 AUTHOR
+
+Joey Hess <joey@kitenet.net> 2006-2010
+
+Modifications by Magnus Woldrich  <m@japh.se> 2011
+
+=head1 COPYRIGHT
+
+Copyright 2006-2011 the B<vidir> L</AUTHOR>s as listed above.
+
+Licensed under the GNU GPL.
+
+=cut
