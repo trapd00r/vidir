@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 use strict;
+use warnings FATAL => 'all';
 
 use File::Spec;
 use File::Temp;
