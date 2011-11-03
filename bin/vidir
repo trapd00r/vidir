@@ -3,7 +3,7 @@ use strict;
 use warnings FATAL => 'all';
 
 use vars qw($VERSION);
-$VERSION = '0.01-woldrich';
+$VERSION = '0.02-woldrich';
 
 use File::Spec;
 use File::Temp;
@@ -18,7 +18,7 @@ if (! GetOptions("verbose|v" => \$verbose)) {
 
 my @dir;
 if (! @ARGV) {
-  push @ARGV, "."
+  push @ARGV, "." 
 }
 foreach my $item (@ARGV) {
   if ($item eq "-") {
@@ -54,23 +54,26 @@ foreach (@dir) {
 @dir=();
 close OUT || die "$0: cannot write ".$tmp->filename.": $!\n";
 
-my @editor = "vi";
+my @editor = 'vi';
 
-if (exists $ENV{VIDIR_EDITOR}) {
-  @editor = split(' ', $ENV{VIDIR_EDITOR});
+if(exists($ENV{VIDIR_EDITOR})) {
+  @editor = $ENV{VIDIR_EDITOR};
 }
-elsif (-x "/usr/bin/editor") {
-  @editor="/usr/bin/editor";
+elsif(-x '/usr/bin/editor') {
+  @editor = '/usr/bin/editor';
 }
-elsif (exists $ENV{EDITOR}) {
-  @editor=split(' ', $ENV{EDITOR});
+elsif(exists($ENV{EDITOR})) {
+  @editor = split(' ', $ENV{EDITOR});
 }
-elsif (exists $ENV{VISUAL}) {
-  @editor=split(' ', $ENV{VISUAL});
+elsif(exists($ENV{VISUAL})) {
+  @editor = split(' ', $ENV{VISUAL});
 }
-my $ret=system(@editor, $ENV{VIDIR_EDITOR_ARGS}, $tmp);
-if ($ret != 0) {
-  die "@editor exited nonzero, aborting\n";
+
+if( (exists($ENV{VIDIR_EDITOR_ARGS})) && ($ENV{VIDIR_EDITOR_ARGS} ne '') ) {
+  exec(@editor, $ENV{VIDIR_EDITOR_ARGS}, $tmp);
+}
+else {
+  exec(@editor,  $tmp);
 }
 
 open (IN, $tmp->filename) || die "$0: cannot read ".$tmp->filename.": $!\n";
