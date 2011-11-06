@@ -3,7 +3,7 @@ use strict;
 use warnings FATAL => 'all';
 
 use vars qw($VERSION);
-$VERSION = '0.02-woldrich';
+$VERSION = '0.022-woldrich';
 
 use File::Spec;
 use File::Temp;
@@ -70,10 +70,10 @@ elsif(exists($ENV{VISUAL})) {
 }
 
 if( (exists($ENV{VIDIR_EDITOR_ARGS})) && ($ENV{VIDIR_EDITOR_ARGS} ne '') ) {
-  exec(@editor, $ENV{VIDIR_EDITOR_ARGS}, $tmp);
+  system(@editor, $ENV{VIDIR_EDITOR_ARGS}, $tmp);
 }
 else {
-  exec(@editor,  $tmp);
+  system(@editor,  $tmp);
 }
 
 open (IN, $tmp->filename) || die "$0: cannot read ".$tmp->filename.": $!\n";
