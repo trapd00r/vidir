@@ -3,7 +3,7 @@ use strict;
 use warnings FATAL => 'all';
 
 use vars qw($VERSION);
-$VERSION = '0.022-woldrich';
+$VERSION = '0.024-woldrich';
 
 use File::Spec;
 use File::Temp;
@@ -49,7 +49,12 @@ my $c=0;
 foreach (@dir) {
   next if /^(.*\/)?\.$/ || /^(.*\/)?\.\.$/;
   $item{++$c}=$_;
-  print OUT "$c\t$_\n";
+  if(-d $_) {
+    print OUT "$c\t$_/\n";
+  }
+  else {
+    print OUT "$c\t$_\n";
+  }
 }
 @dir=();
 close OUT || die "$0: cannot write ".$tmp->filename.": $!\n";
@@ -82,6 +87,7 @@ while (<IN>) {
   if (/^(\d+)\t{0,1}(.*)/) {
     my $num=int($1);
     my $name=$2;
+    $name =~ s{/+$}{}g;
     if (! exists $item{$num}) {
       die "$0: unknown item number $num\n";
     }
