@@ -1,10 +1,10 @@
-NAME
+# NAME
     vidir - edit directory
 
-SYNOPSIS
+# SYNOPSIS
     vidir [--verbose] [directory|file|-] ...
 
-DESCRIPTION
+# DESCRIPTION
     vidir allows editing of the contents of a directory in a text editor. If
     no directory is specified, the current directory is edited.
 
@@ -18,11 +18,19 @@ DESCRIPTION
     of filenames from stdin and displays those for editing. Alternatively, a
     list of files can be specified on the command line.
 
-OPTIONS
+# OPTIONS
     -v, --verbose
         Verbosely display the actions taken by the program.
 
-EXAMPLES
+# COLORS
+
+If you want to use dircolors in vim, grab [vidir-ls.vim][0].
+
+Set VIDIR\_EDITOR_ARGS accordingly:
+
+    export VIDIR_EDITOR_ARGS='-c :set nolist | :set ft=vidir-ls'
+
+# EXAMPLES
     vidir
     vidir *.jpeg
         Typical uses.
@@ -34,7 +42,7 @@ EXAMPLES
     find -type f | vidir -
         Edit all files under the current directory and subdirectories.
 
-ENVIRONMENT VARIABLES
+# ENVIRONMENT VARIABLES
     EDITOR
         Editor to use.
 
@@ -44,13 +52,18 @@ ENVIRONMENT VARIABLES
     VIDIR_EDITOR_ARGS
         Optional args for editor
 
-AUTHOR
+# SEE ALSO
+
+[vidir-ls][0]
+
+# AUTHOR
     Joey Hess <joey@kitenet.net> 2006-2010
 
     Modifications by Magnus Woldrich <m@japh.se> 2011
 
-COPYRIGHT
+# COPYRIGHT
     Copyright 2006-2011 the vidir "AUTHOR"s as listed above.
 
     Licensed under the GNU GPL.
 
+[0]: https://github.com/trapd00r/vim-syntax-vidir-ls
