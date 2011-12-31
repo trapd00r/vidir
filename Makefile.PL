@@ -16,7 +16,7 @@ WriteMakefile1(
     AUTHOR              => q{Magnus Woldrich <m@japh.se>},
     ABSTRACT            => 'edit directory',
     VERSION_FROM        => 'bin/vidir',
-    'LICENSE'           => 'perl',
+    LICENSE             => 'perl',
     PL_FILES            => {},
     EXE_FILES =>           ['bin/vidir'],
     MAN1PODS            => {

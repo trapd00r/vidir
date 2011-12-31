@@ -3,10 +3,11 @@ use strict;
 use warnings FATAL => 'all';
 
 use vars qw($VERSION);
-$VERSION = '0.024-woldrich';
+$VERSION = '0.026-woldrich';
 
 use File::Spec;
 use File::Temp;
+use File::Path ();
 use Getopt::Long;
 
 my $error=0;
@@ -154,7 +155,7 @@ sub rm {
   my $file = shift;
 
   if (-d $file && ! -l $file) {
-    return rmdir $file;
+    return File::Path::rmtree($file);
   }
   else {
     return unlink $file;
