@@ -3,23 +3,22 @@ use strict;
 use warnings FATAL => 'all';
 
 use vars qw($VERSION);
-$VERSION = '0.026-woldrich';
+$VERSION = '0.030-woldrich';
 
 use File::Spec;
 use File::Temp;
 use File::Path ();
 use Getopt::Long;
 
-my $error=0;
+my($error, $verbose) = (0, 0);
 
-my $verbose=0;
 if (! GetOptions("verbose|v" => \$verbose)) {
   die "Usage: $0 [--verbose] [directory|file|-]\n";
 }
 
 my @dir;
 if (! @ARGV) {
-  push @ARGV, "." 
+  push @ARGV, "."
 }
 foreach my $item (@ARGV) {
   if ($item eq "-") {
@@ -51,10 +50,10 @@ foreach (@dir) {
   next if /^(.*\/)?\.$/ || /^(.*\/)?\.\.$/;
   $item{++$c}=$_;
   if(-d $_) {
-    print OUT "$c\t$_/\n";
+    print OUT sprintf("%5d\t%s/\n", $c, $_);
   }
   else {
-    print OUT "$c\t$_\n";
+    print OUT sprintf("%5d\t%s\n", $c, $_);
   }
 }
 @dir=();
@@ -85,7 +84,8 @@ else {
 open (IN, $tmp->filename) || die "$0: cannot read ".$tmp->filename.": $!\n";
 while (<IN>) {
   chomp;
-  if (/^(\d+)\t{0,1}(.*)/) {
+  if(/^\s*(\d+)\t{0,1}(.*)/) {
+    #if (/^(\d+)\t{0,1}(.*)/) {
     my $num=int($1);
     my $name=$2;
     $name =~ s{/+$}{}g;
@@ -95,7 +95,7 @@ while (<IN>) {
     elsif ($name ne $item{$num}) {
       next unless length $name;
       my $src=$item{$num};
-      
+
       if (! (-e $src || -l $src) ) {
         print STDERR "$0: $src does not exist\n";
         delete $item{$num};
@@ -187,7 +187,7 @@ B<vidir> [--verbose] [directory|file|-] ...
 =head1 DESCRIPTION
 
 vidir allows editing of the contents of a directory in a text editor. If no
-directory is specified, the current directory is edited. 
+directory is specified, the current directory is edited.
 
 When editing a directory, each item in the directory will appear on its own
 numbered line. These numbers are how vidir keeps track of what items are
