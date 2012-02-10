@@ -16,28 +16,35 @@ if (! GetOptions("verbose|v" => \$verbose)) {
   die "Usage: $0 [--verbose] [directory|file|-]\n";
 }
 
-my @dir;
-if (! @ARGV) {
-  push @ARGV, "."
-}
-foreach my $item (@ARGV) {
-  if ($item eq "-") {
-    push @dir, map { chomp; $_ } <STDIN>;
-    close STDIN;
-    open(STDIN, "/dev/tty") || die "reopen: $!\n";
+my(@files, @directories, @sorted);
+@ARGV = @ARGV > 0 ? @ARGV : './';
+
+for my $item(@ARGV) {
+  if($item eq '-') {
+    push(@files, map { chomp; $_ } <STDIN>);
+    close STDIN or die "Cant close STDIN: $!\n";
+    open(STDIN, '/dev/tty') or die "Cant reopen STDIN: $!\n";
+    next;
   }
-  elsif (-d $item) {
-    $item =~ s{/?$}{/};
-    opendir(DIR, $item) || die "$0: cannot read $item: $!\n";
-    push @dir, map { "$item$_" } sort readdir(DIR);
-    closedir DIR;
-  }
-  else {
-    push @dir, $item;
+  if(-d $item) {
+    opendir(my $dh, $item) or die "Cant opendir $item: $!\n";
+    for(grep { ! /\A[.]{1,2}\Z/ } readdir($dh)) {
+      $item =~ s{/$}{};
+      if(-d "$item/$_") {
+        push(@directories, "$item/$_/");
+      }
+      else {
+        push(@files, "$item/$_");
+      }
+    }
+    closedir $dh or die "Cant close dirhandle $item: $!\n";
   }
 }
 
-if (grep(/[[:cntrl:]]/, @dir)) {
+@sorted = (sort(@directories), sort(@files));
+
+
+if (grep(/[[:cntrl:]]/, @sorted)) {
   die "$0: control characters in filenames are not supported\n";
 }
 
@@ -46,17 +53,11 @@ open (OUT, ">".$tmp->filename) || die "$0: cannot create ".$tmp->filename.": $!\
 
 my %item;
 my $c=0;
-foreach (@dir) {
-  next if /^(.*\/)?\.$/ || /^(.*\/)?\.\.$/;
+foreach (@sorted) {
   $item{++$c}=$_;
-  if(-d $_) {
-    print OUT sprintf("%5d\t%s/\n", $c, $_);
-  }
-  else {
-    print OUT sprintf("%5d\t%s\n", $c, $_);
-  }
+  print OUT sprintf("%5d\t%s\n", $c, $_);
 }
-@dir=();
+@sorted=();
 close OUT || die "$0: cannot write ".$tmp->filename.": $!\n";
 
 my @editor = 'vi';
@@ -88,7 +89,7 @@ while (<IN>) {
     #if (/^(\d+)\t{0,1}(.*)/) {
     my $num=int($1);
     my $name=$2;
-    $name =~ s{/+$}{}g;
+    #$name =~ s{/+$}{}g;
     if (! exists $item{$num}) {
       die "$0: unknown item number $num\n";
     }
