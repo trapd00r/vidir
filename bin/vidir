@@ -6,7 +6,7 @@ use open qw(:std :utf8);
 use encoding 'utf8';
 
 use vars qw($VERSION);
-$VERSION = '0.030-woldrich';
+$VERSION = '0.040-woldrich';
 
 use File::Spec;
 use File::Temp;
