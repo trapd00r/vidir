@@ -8,6 +8,7 @@ use encoding 'utf8';
 use vars qw($VERSION);
 $VERSION = '0.040-woldrich';
 
+use File::Basename;
 use File::Spec;
 use File::Temp;
 use File::Path ();
@@ -128,6 +129,7 @@ while (<IN>) {
         }
       }
 
+      File::Path::make_path(dirname($name));
       if (! rename($src, $name)) {
         print STDERR "$0: failed to rename $src to $name: $!\n";
         $error=1;
