@@ -11,6 +11,7 @@ $VERSION = '0.040-woldrich';
 use File::Basename;
 use File::Spec;
 use File::Temp;
+use File::Copy;
 use File::Path ();
 use Getopt::Long;
 
@@ -56,6 +57,7 @@ my $tmp=File::Temp->new(TEMPLATE => "dirXXXXX", DIR => File::Spec->tmpdir);
 open (OUT, ">".$tmp->filename) || die "$0: cannot create ".$tmp->filename.": $!\n";
 
 my %item;
+my %done;
 my $c=0;
 foreach (@sorted) {
   $item{++$c}=$_;
@@ -93,13 +95,14 @@ while (<IN>) {
     #if (/^(\d+)\t{0,1}(.*)/) {
     my $num=int($1);
     my $name=$2;
+    my $iscopy=exists $done{$num};
     #$name =~ s{/+$}{}g;
-    if (! exists $item{$num}) {
+    if (! exists $item{$num} && ! $iscopy) {
       die "$0: unknown item number $num\n";
     }
-    elsif ($name ne $item{$num}) {
+    elsif ($iscopy || $name ne $item{$num}) {
       next unless length $name;
-      my $src=$item{$num};
+      my $src=$iscopy ? $done{$num} : $item{$num};
 
       if (! (-e $src || -l $src) ) {
         print STDERR "$0: $src does not exist\n";
@@ -130,21 +133,22 @@ while (<IN>) {
       }
 
       File::Path::make_path(dirname($name));
-      if (! rename($src, $name)) {
-        print STDERR "$0: failed to rename $src to $name: $!\n";
+      my $result=$iscopy ? copy($src, $name) : move($src, $name);
+      if (! $result) {
+        print STDERR "$0: failed to ".($iscopy ? "copy" : "rename")." $src to $name: $!\n";
         $error=1;
       }
-      else {
-        if (-d $name) {
-          foreach (values %item) {
-            s/^\Q$src\E/$name/;
-          }
-        }
-        if ($verbose) {
-          print "'$src' => '$name'\n";
+      if (-d $name && ! $iscopy) {
+        foreach (values %item) {
+          s/^\Q$src\E/$name/;
         }
       }
+      if ($verbose) {
+        print "'$src' => '$name'\n" unless $iscopy;
+        print "'$src' ~> '$name'\n" if $iscopy;
+      }
     }
+    $done{$num}=$name;
     delete $item{$num};
   }
   elsif (/^\s*$/) {
