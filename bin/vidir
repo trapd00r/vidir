@@ -71,11 +71,11 @@ my @editor = 'vi';
 if(exists($ENV{VIDIR_EDITOR})) {
   @editor = $ENV{VIDIR_EDITOR};
 }
-elsif(-x '/usr/bin/editor') {
-  @editor = '/usr/bin/editor';
-}
 elsif(exists($ENV{EDITOR})) {
   @editor = split(' ', $ENV{EDITOR});
+}
+elsif(-x '/usr/bin/editor') {
+  @editor = '/usr/bin/editor';
 }
 elsif(exists($ENV{VISUAL})) {
   @editor = split(' ', $ENV{VISUAL});
