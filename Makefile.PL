@@ -14,7 +14,7 @@ WriteMakefile1(
 
     NAME                => 'App::vidir',
     AUTHOR              => q{Magnus Woldrich <m@japh.se>},
-    ABSTRACT            => 'edit directory',
+    ABSTRACT            => 'file manager USING vim itself',
     VERSION_FROM        => 'bin/vidir',
     LICENSE             => 'perl',
     PL_FILES            => {},
@@ -22,6 +22,13 @@ WriteMakefile1(
     MAN1PODS            => {
       'bin/vidir'       => 'blib/man1/vidir.1',
       },
+    META_ADD                     => {
+      provides => {
+        'App::vidir' => {
+          file => 'bin/vidir',
+        },
+      },
+    },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'vidir-*' },
 );
