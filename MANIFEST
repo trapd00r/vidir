@@ -1,0 +1,5 @@
+ftplugin/vidir.vim
+bin/vidir
+Makefile.PL
+MANIFEST
+README
