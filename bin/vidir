@@ -6,7 +6,7 @@ use utf8;
 use open qw(:std :utf8);
 
 use vars qw($VERSION);
-$VERSION = '0.042';
+$VERSION = '0.050';
 
 use File::Basename;
 use File::Spec;
@@ -14,12 +14,16 @@ use File::Temp;
 use File::Copy;
 use File::Path ();
 use Getopt::Long;
+use Pod::Usage;
 
-my($error, $verbose) = (0, 0);
+my($error, $opt_verbose, $opt_sort) = (0, 0, 0);
 
-if (! GetOptions("verbose|v" => \$verbose)) {
-  die "Usage: $0 [--verbose] [directory|file|-]\n";
-}
+
+GetOptions(
+  's|sort'    => \$opt_sort,
+  'v|verbose' => \$opt_verbose,
+  'h|help'    => sub { pod2usage(verbose => 1) },
+);
 
 my(@files, @directories, @sorted);
 @ARGV = @ARGV > 0 ? @ARGV : './';
@@ -46,7 +50,10 @@ for my $item(@ARGV) {
   }
 }
 
-@sorted = (sort(@directories), sort(@files));
+@sorted = $opt_sort
+  ? (sort(@directories), sort(@files))
+  : (@directories, @files);
+
 
 
 if (grep(/[[:cntrl:]]/, @sorted)) {
@@ -121,7 +128,7 @@ while (<IN>) {
           print STDERR "$0: failed to rename $name to $tmp: $!\n";
           $error=1;
         }
-        elsif ($verbose) {
+        elsif ($opt_verbose) {
           print "'$name' -> '$tmp'\n";
         }
         foreach my $item (keys %item) {
@@ -142,7 +149,7 @@ while (<IN>) {
           s/^\Q$src\E/$name/;
         }
       }
-      if ($verbose) {
+      if ($opt_verbose) {
         print "'$src' => '$name'\n" unless $iscopy;
         print "'$src' ~> '$name'\n" if $iscopy;
       }
@@ -176,7 +183,7 @@ foreach my $item (reverse sort values %item) {
     print STDERR "$0: failed to remove $item: $!\n";
     $error=1;
   }
-  if ($verbose) {
+  if ($opt_verbose) {
     print "removed '$item'\n";
   }
 }
@@ -212,6 +219,14 @@ of files can be specified on the command line.
 
 =over 4
 
+=item -s, --sort
+
+Sort directories and files before displaying them. Defaults to off.
+
+=back
+
+=over 4
+
 =item -v, --verbose
 
 Verbosely display the actions taken by the program.
@@ -234,6 +249,12 @@ Edit subdirectory contents too. To delete subdirectories,
 delete all their contents and the subdirectory itself in the editor.
 
 =item find -type f | vidir -
+
+Edit all files under the current directory and subdirectories.
+
+=item du -h --max-depth=1 "$@" | sort -k 1,1hr -k 2,2f | awk -F '\t' '{print $2}' | vidir  -
+
+Sort catalogs in . by size, and display in vidir.
 
 Edit all files under the current directory and subdirectories.
 
@@ -261,7 +282,7 @@ Optional args for editor
 
 Joey Hess <joey@kitenet.net> 2006-2010
 
-Modifications by Magnus Woldrich  <m@japh.se> 2011, 2019-
+Modifications by Magnus Woldrich  <m@japh.se> 2011, 2020-
 
 =head1 COPYRIGHT
 
