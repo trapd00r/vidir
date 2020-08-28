@@ -66,9 +66,10 @@ open (OUT, ">".$tmp->filename) || die "$0: cannot create ".$tmp->filename.": $!\
 my %item;
 my %done;
 my $c=0;
+my $digits=int(1+log(scalar @sorted)/log(10));
 foreach (@sorted) {
   $item{++$c}=$_;
-  print OUT sprintf("%5d %s\n", $c, $_);
+  print OUT sprintf("%*d %s\n", $digits, $c, $_);
 }
 @sorted=();
 close OUT || die "$0: cannot write ".$tmp->filename.": $!\n";
