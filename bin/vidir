@@ -37,7 +37,7 @@ for my $item(@ARGV) {
   }
   if(-d $item) {
     opendir(my $dh, $item) or die "Cant opendir $item: $!\n";
-    for(grep { ! /\A[.]{1,2}\Z/ } readdir($dh)) {
+    for(sort grep { ! /\A[.]{1,2}\Z/ } readdir($dh)) {
       $item =~ s{/$}{};
       if(-d "$item/$_") {
         push(@directories, "$item/$_/");
