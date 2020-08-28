@@ -61,7 +61,7 @@ if (grep(/[[:cntrl:]]/, @sorted)) {
 }
 
 my $tmp=File::Temp->new(TEMPLATE => "dirXXXXX", DIR => File::Spec->tmpdir);
-open (OUT, ">".$tmp->filename) || die "$0: cannot create ".$tmp->filename.": $!\n";
+open (OUT, ">:raw", $tmp->filename) || die "$0: cannot create ".$tmp->filename.": $!\n";
 
 my %item;
 my %done;
@@ -95,7 +95,7 @@ else {
   system(@editor,  $tmp);
 }
 
-open (IN, $tmp->filename) || die "$0: cannot read ".$tmp->filename.": $!\n";
+open (IN, '<:raw', $tmp->filename) || die "$0: cannot read ".$tmp->filename.": $!\n";
 while (<IN>) {
   chomp;
   if(/^\s*(\d+) {0,1}(.*)/) {
