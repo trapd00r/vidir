@@ -2,11 +2,11 @@
 package App::vidir;
 use strict;
 use warnings FATAL => 'all';
-use utf8;
-use open qw(:std :utf8);
+#use utf8;
+#use open qw(:std :utf8);
 
 use vars qw($VERSION);
-$VERSION = '0.050';
+$VERSION = '0.052';
 
 use File::Basename;
 use File::Spec;
